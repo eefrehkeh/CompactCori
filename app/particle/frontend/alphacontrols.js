@@ -6,6 +6,7 @@ pc.script.create('alphacontrols', function (context) {
         
         this.torque = 0.5;
         this.power = 10;
+        this.time = 0;
     };
 
     Alphacontrols.prototype = {

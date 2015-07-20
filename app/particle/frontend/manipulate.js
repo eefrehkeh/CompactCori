@@ -16,41 +16,26 @@ pc.script.create('manipulate', function (app) {
 
         // Called every frame, dt is time in seconds since last update
         update: function (dt) {
-            var xmlhttp;
-            var json;
-            var url = "";
-            if (window.XMLHttpRequest) {
-                // code for IE7+, Firefox, Chrome, Opera, Safari
-                xmlhttp = new XMLHttpRequest();
-            } else {
-                // code for IE6, IE5
-                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-                    if(xmlhttp.status == 200){
-                        json = xmlhttp.responseText;
-                    }
-                    else if(xmlhttp.status == 400) {
-                        alert('There was an error 400');
-                    }
-                    else {
-                        alert('something else other than 200 was returned');
-                    }
+            var vec = new pc.Vec3(0,0,0);
+            $.ajax({
+                url: "http://localhost:8080/api/v1/get_particles",
+                type: "GET",
+                dataType: "json",
+                success: function(res) {
+                   //alert("Hello " + res.particles.length)
+                   var myText = "";
+                   this.ball2 = app.root.findByName("Ball2");
+                   for (i = 0; i < res.particles.length ; i++ ) {
+                       vec.x = parseFloat(res.particles[i].position[0]);
+                       vec.y = parseFloat(res.particles[i].position[1]);
+                       vec.z = parseFloat(res.particles[i].position[2]);
+                       this.ball2.translate(vec.x, vec.y, vec.z);
+                   }
+                },
+                error: function(xhr, status, error) {
                 }
-            };
-            
-            xmlhttp.open("GET", url, true);
-            xmlhttp.send();
-            
-            
-            this.time+=dt;
-            var e = this.ball2;
-            if(this.time > 0.01){
-                e.translate(1,0,-1);
-                this.time=0;
-            }
+                
+            });
         }
     };
 
