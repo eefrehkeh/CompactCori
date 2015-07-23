@@ -1,3 +1,8 @@
+var script = document.createElement('script');
+script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js';
+script.type = 'text/javascript';
+document.getElementsByTagName('head')[0].appendChild(script);
+
 pc.script.create('manipulate', function (app) {
     // Creates a new Manipulate instance
     var Manipulate = function (entity) {
@@ -16,7 +21,7 @@ pc.script.create('manipulate', function (app) {
 
         // Called every frame, dt is time in seconds since last update
         update: function (dt) {
-            var vec = new pc.Vec3(0,0,0);
+            var vec = new pc.Vec3(0,0,0); 
             $.ajax({
                 url: "http://localhost:8080/api/v1/get_particles",
                 type: "GET",
@@ -36,6 +41,21 @@ pc.script.create('manipulate', function (app) {
                 }
                 
             });
+            
+            /*
+            if (context.keyboard.isPressed(pc.input.KEY_A)) {
+                var text1 = "You are receiving and reading this message.";
+                $.ajax({
+                    url: "http://localhost:8080/api/v1/post_parameters",
+                    type: "POST",
+                    dataType: "text",
+                    success: function(text1) {
+                    },
+                    error: function(xhr, status, error) {
+                    }
+                });
+            }
+            */
         }
     };
 
@@ -48,7 +68,6 @@ pc.script.create('Force', function (app) {
     var Force = function (entity) {
         this.entity = entity;
     };
-
     Force.prototype = {
         // Called once after all resources are loaded and before the first update
         initialize: function () {
@@ -57,7 +76,6 @@ pc.script.create('Force', function (app) {
             } 
             this.ball = app.root.findByName("Ball");
         },
-
         // Called every frame, dt is time in seconds since last update
         update: function (dt) {
             var gravity = new pc.Vec3(0, 9.8, 0);
@@ -68,7 +86,6 @@ pc.script.create('Force', function (app) {
             this.entity.rigidbody.applyForce(goToHere);
         }
     };
-
     return Force;
 });
 */

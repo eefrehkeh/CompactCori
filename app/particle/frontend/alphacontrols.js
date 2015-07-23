@@ -1,3 +1,9 @@
+var script = document.createElement('script');
+script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js';
+script.type = 'text/javascript';
+document.getElementsByTagName('head')[0].appendChild(script);
+
+
 pc.script.create('alphacontrols', function (context) {
     // Creates a new Tankcontrols instance
     var Alphacontrols = function (entity) {
@@ -31,6 +37,21 @@ pc.script.create('alphacontrols', function (context) {
                 this.force.copy(this.entity.forward).scale(this.power);
                 this.entity.rigidbody.applyForce(this.force);
             }
+            
+            
+            if (context.keyboard.isPressed(pc.input.KEY_A)) {
+                var text1 = "name=ifreke&age=26";
+                $.ajax({
+                    url: "http://localhost:8080/api/v1/post_parameters",
+                    type: "POST",
+                    data: text1,
+                    success: function(data, status, jqXHR) {
+                    },
+                    error: function(xhr, status, error) {
+                    }
+                });
+            }
+            
         }
     };
 
