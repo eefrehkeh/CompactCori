@@ -51,7 +51,7 @@ pc.script.create('Orbit3d', function (context) {
             this.cam.setPosition(this.cam_xyz);
             this.cam.lookAt(this.target_xyz);
             
-            console.log(this.cam_state);
+            //console.log(this.cam_state);
             
             
             
@@ -59,7 +59,7 @@ pc.script.create('Orbit3d', function (context) {
         
         onMouseMove: function(event){
             
-            console.log("MOVE");
+            //console.log("MOVE");
             if(this.cam_state === 'go'){
                 this.cam_ex += event.dx/(100/this.factor);
                 this.cam_ez += event.dy/(100/this.factor);
@@ -80,7 +80,7 @@ pc.script.create('Orbit3d', function (context) {
                 this.cam_state = 'idle';
             }          
             
-        },
+        }
         
         
     };

@@ -67,8 +67,8 @@ def main():
     print("Server started")
 
     particles = []
-    particles.append( {"position" : [0.5,0.5,0.5], "velocity" : [0.1,0.1,0.1] } )
-    particles.append( {"position" : [0.0,0.5,0.5], "velocity" : [0.1,0.1,0.1] } )
+    particles.append( {"particle_id" : 0, "position" : [0.5,0.5,0.5], "velocity" : [0.1,0.1,0.1] } )
+    particles.append( {"particle_id" : 1, "position" : [0.0,0.5,0.5], "velocity" : [0.1,0.1,0.1] } )
 
     icount = 0
     while True:
@@ -84,7 +84,6 @@ def main():
         temp_endpoint += json.dumps(particles)
         temp_endpoint += "}"
         endpoint = temp_endpoint
-        time.sleep(2)
         debug("Loop count "+str(icount))
         debug("Loop count "+endpoint)
 

@@ -4,7 +4,7 @@ script.type = 'text/javascript';
 document.getElementsByTagName('head')[0].appendChild(script);
 
 pc.script.create('manipulate', function (app) {
-    // Creates a new Manipulate instance
+    // Creates a new Manipulate instanc
     var Manipulate = function (entity) {
         this.entity = entity;
         this.time = 0;
@@ -20,42 +20,10 @@ pc.script.create('manipulate', function (app) {
         },
 
         // Called every frame, dt is time in seconds since last update
-        update: function (dt) {
-            var vec = new pc.Vec3(0,0,0); 
-            $.ajax({
-                url: "http://localhost:8080/api/v1/get_particles",
-                type: "GET",
-                dataType: "json",
-                success: function(res) {
-                   //alert("Hello " + res.particles.length)
-                   var myText = "";
-                   this.ball2 = app.root.findByName("Ball2");
-                   for (i = 0; i < res.particles.length ; i++ ) {
-                       vec.x = parseFloat(res.particles[i].position[0]);
-                       vec.y = parseFloat(res.particles[i].position[1]);
-                       vec.z = parseFloat(res.particles[i].position[2]);
-                       this.ball2.translate(vec.x, vec.y, vec.z);
-                   }
-                },
-                error: function(xhr, status, error) {
-                }
-                
-            });
-            
-            /*
-            if (context.keyboard.isPressed(pc.input.KEY_A)) {
-                var text1 = "You are receiving and reading this message.";
-                $.ajax({
-                    url: "http://localhost:8080/api/v1/post_parameters",
-                    type: "POST",
-                    dataType: "text",
-                    success: function(text1) {
-                    },
-                    error: function(xhr, status, error) {
-                    }
-                });
-            }
-            */
+        update: function (dt) { 
+            //var holder = {};
+            //holder = app.root.findByName("Comm").script.ajax.send();
+            //this.entity.setLocalPosition(holder[0].position[0], holder[0].position[1], holder[0].position[2]);
         }
     };
 

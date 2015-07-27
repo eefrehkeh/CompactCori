@@ -24,21 +24,25 @@ pc.script.create('alphacontrols', function (context) {
         update: function (dt) {
             this.entity.rigidbody.applyForce(0, 9.8, 0);
             if (context.keyboard.isPressed(pc.input.KEY_LEFT)) {
-                this.entity.rigidbody.applyTorque(0, this.torque, 0);
+                //this.entity.rigidbody.applyTorque(0, this.torque, 0);
+                this.entity.rotate(0,30*dt,0);
             }
             if (context.keyboard.isPressed(pc.input.KEY_RIGHT)) {
-                this.entity.rigidbody.applyTorque(0, -this.torque, 0);
+                //this.entity.rigidbody.applyTorque(0, -this.torque, 0);
+                this.entity.rotate(0,-30*dt,0);
             }
             if (context.keyboard.isPressed(pc.input.KEY_UP)) {
-                this.force.copy(this.entity.forward).scale(-this.power);
-                this.entity.rigidbody.applyForce(this.force);
+                //this.force.copy(this.entity.forward).scale(-this.power);
+                //this.entity.rigidbody.applyForce(this.force);
+                this.entity.translate(0,0,2.5*dt);
             }
             if (context.keyboard.isPressed(pc.input.KEY_DOWN)) {
-                this.force.copy(this.entity.forward).scale(this.power);
-                this.entity.rigidbody.applyForce(this.force);
+                //this.force.copy(this.entity.forward).scale(this.power);
+                //this.entity.rigidbody.applyForce(this.force);
+                this.entity.translate(0,0,-2.5*dt);
             }
             
-            
+            /*
             if (context.keyboard.isPressed(pc.input.KEY_A)) {
                 var text1 = "name=ifreke&age=26";
                 $.ajax({
@@ -51,7 +55,7 @@ pc.script.create('alphacontrols', function (context) {
                     }
                 });
             }
-            
+            */
         }
     };
 
