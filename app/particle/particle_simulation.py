@@ -1,132 +1,176 @@
 #!/usr/bin/python
-"""A parallelized MD simulation in Python written for version 1 of the Compact Cori
+"""
+A parallelized MD simulation in Python written for version 1 of the Compact Cory
 project at NERSC.
 This runs in O(n^2) time since all particles are compared to one another when
 locating in-range neighbors.
-Threads in mpi4py are 0-indexed
 """
-import Partition
-import Particle
-import util
-import params
-
 import argparse
 import random
 import math
-import threading
-import json
-from urllib.parse import urlparse
-from http.server import BaseHTTPRequestHandler
-from mpi4py import MPI as mpi
+import copy
+import tkinter as tk
 
-params.comm = mpi.COMM_WORLD
-params.rank = params.comm.Get_rank()
-params.num_threads = params.comm.Get_size()
+class Application(tk.Frame):
+    def say_hi(self):
+        print("hi there, everyone!")
+
+    def createWidgets(self):
+        self.QUIT = tk.Button(self)
+        self.QUIT["text"] = "QUIT"
+        self.QUIT["fg"]   = "red"
+        self.QUIT["command"] =  self.quit
+
+        self.QUIT.pack({"side": "left"})
+
+        self.hi_there = tk.Button(self)
+        self.hi_there["text"] = "Hello",
+        self.hi_there["command"] = self.say_hi
+
+        self.hi_there.pack({"side": "left"})
+
+    def __init__(self, master=None):
+        tk.Frame.__init__(self, master)
+        self.pack()
+        self.createWidgets()
+
+#root = tk.Tk()
+#app = Application(master=root)
+#canvas = tk.Canvas(root, width = 300, height = 300)
+#canvas.pack()
+#app.master.title("Particle Simulation")
+#app.mainloop()
+#root.destroy()
+canvas = None
 
 # Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--numparticles", type=int,
         help = "number of particles in simulation")
+parser.add_argument("-r", "--radius", type=int,
+        help = "radius of particle interaction")
+parser.add_argument("-f", "--force", type=int,
+        help = "force between particles")
 parser.add_argument("--height", type=int,
-        help = "height of simulation ")
+        help = "height of simulation window")
 parser.add_argument("--width", type=int,
-        help = "width of simulation ")
-parser.add_argument("--depth", type=int,
-        help = "depth of simulation ")
+        help = "width of simulation window")
 parser.add_argument("-d", "--dt", type=float,
-        help = "time constant")
+        help = "multiplier time constant")
 args = parser.parse_args()
 
-params.num_particles = args.numparticles if args.numparticles else 20
-params.simulation_height = args.height if args.height else 1000
-params.simulation_width = args.width if args.width else 1000
-params.simulation_depth = args.depth if args.depth else 1000
-params.dt = args.dt if args.dt else 0.0005
-params.num_active_workers = 0
-params.partitions = {}
+num_particles = args.numparticles if args.numparticles else 20
+interaction_radius = args.radius if args.radius else 100
+force_amount = args.force if args.force else 50
+simulation_height = args.height if args.height else 1000
+simulation_width = args.width if args.width else 1000
+force_constant = args.force if args.force else 1
+dt = args.dt if args.dt else 0.0005
 
-# OOB?
-for i in range(1, params.num_threads + 1):
-    params.partitions[i] = Partition(i)
+particles = []
 
-# Create Particles for Partitions
-for i in range(num_particles):
-    position = [random.randint(0,params.simulation_width - 1),
-                random.randint(0,params.simulation_height - 1),
-                random.randint(0,params.simulation_depth - 1)]
-    velocity = [random.randint(0,10),
-                random.randint(0,10),
-                random.randint(0,10)]
-    mass = 0
-    radius = random.randint(0, params.max_radius)
-    if radius > params.max_radius:
-        util.debug("Radius is greater than 1/32 of the simulation")
-    thread_num = params.determine_particle_thread_num(position[0])
-    new_particle = Particle(i, thread_num, position, velocity, mass, radius)
-    partitions[thread_num].add_particle(new_particle)
+class Particle:
+    static_particles = particles
+    def __init__(self, mass = 1, x_position = None, y_position = None, x_velocity = 0, y_velocity = 0):
+        self.x_position = x_position if (x_position != None) else random.randint(0, simulation_width - 1)
+        self.y_position = y_position if (y_position != None) else random.randint(0, simulation_height - 1)
+        self.x_velocity = x_velocity if (x_velocity != None) else random.randint(-1*simulation_height//10, simulation_height//10)
+        self.y_velocity = y_velocity if (y_velocity != None) else random.randint(-1*simulation_height//10, simulation_height//10)
+        self.mass = mass
+        self.neighbors = None
+        self.x_accel = 0
+        self.y_accel = 0
+
+    def euclidean_distance_to(self, particle):
+        x = abs(self.x_position - particle.x_position)
+        y = abs(self.y_position - particle.y_position)
+        return (math.sqrt((x**2) + (y**2)), x, y)
+
+    def populate_neighbors(self):
+        self.neighbors = []
+        for particle in Particle.static_particles:
+            euclidean_distance, x_distance, y_distance = self.euclidean_distance_to(particle)
+            if euclidean_distance < interaction_radius and particle is not self:
+                self.neighbors.append((particle, x_distance, y_distance))
+
+    def calculate_force(self, particle, x_distance, y_distance):
+        x = force_constant * (self.mass * particle.mass)/(x_distance**2) if x_distance else 0
+        y = force_constant * (self.mass * particle.mass)/(y_distance**2) if y_distance else 0
+        return x,y
+
+    def calculate_net_force(self):
+        self.x_accel = 0
+        self.y_accel = 0
+        for neighbor, x_distance, y_distance in self.neighbors:
+            x, y = self.calculate_force(neighbor, x_distance, y_distance)
+            self.x_accel += x * x_distance
+            self.y_accel += y * y_distance
+
+    def move_particle(self):
+        """
+        Naively assumes velocity is less than the size of the simulation window
+        """
+        self.x_velocity += self.x_accel * dt
+        self.y_velocity += self.y_accel * dt
+
+        self.x_position += self.x_velocity * dt
+        self.y_position += self.y_velocity * dt
+
+        while self.x_position < 0 or self.x_position > simulation_width:
+            self.x_position = self.x_position*-1 if self.x_position < 0 else 2*simulation_width - self.x_position
+            self.x_velocity *= -1
+
+        while self.y_position < 0 or self.y_position > simulation_height:
+            self.y_position = self.y_position*-1 if self.y_position < 0 else 2*simulation_height - self.y_position
+            self.y_velocity *= -1
+
+        self.x_position = int(self.x_position)
+        self.y_position = int(self.y_position)
+
+    def __repr__(self):
+        if self.neighbors:
+            return "Currently located at: (" + str(self.x_position) + "," + str(self.y_position) + ") with " + str(len(self.neighbors)) + " neighbors\n"
+        else:
+            return "Currently located at: (" + str(self.x_position) + "," + str(self.y_position) + ") with " + str(self.neighbors) + " neighbors\n"
+
+# Create Particles
+for _ in range(num_particles):
+    particles.append(Particle())
+
+def text_simulation():
+    """
+    Print out an ASCII-based representation of the simulation to STDOUT
+    """
+    # Populate nested list
+    arr = [[" "] * simulation_height for _ in range(simulation_width)]
+    for particle in particles:
+        arr[particle.x_position][particle.y_position] = "o"
+
+    # Convert list to buffer to print to STDOUT
+    buf = " "
+    for i in range(simulation_width):
+        buf += str(i % 10)
+    buf += "\n " + "-" * simulation_width + "\n"
+    for j in range(simulation_height):
+        buf += "|"
+        for i in range(simulation_width):
+            buf += arr[i][j]
+        buf += "|" +  str(j) + "\n"
+    buf += " " + "-" * simulation_width
+    print(buf)
 
 # One timestep
 def timestep():
-    if rank is 0:
-        particles = []
-        buff = []
-        for i in range(1, params.num_threads):
-            params.comm.Recv(buff, source = mpi.ANY_SOURCE)
-            particles += buff
-    else:
-        partition = params.partitions[rank]
-        partition.send_and_receive_neighboring_particles()
-        partition.interact_particles()
-        partition.exchange_particles()
-        partition.update_master()
+    for particle in particles:
+        particle.populate_neighbors()
+    for particle in particles:
+        particle.calculate_net_force()
+    for particle in particles:
+        particle.move_particle()
 
+# Run simulation
+#while True:
+for i in range(300):
+    timestep()
+    text_simulation()
 
-class Server(BaseHTTPRequestHandler):
-    def do_GET(self):
-        """Handle GET requests to the API endpoint"""
-        global endpoint
-        parsed_path = urlparse(self.path)
-        if "/api/v1/get_particles" in parsed_path:
-            message = "\r\n".join(endpoint)
-            self.send_response(200)
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(message.encode("utf-8"))
-        else:
-            util.debug("GET request sent to " + parsed_path)
-
-    def do_POST(self):
-        """Handle POST requests to the API endpoint"""
-        global endpoint
-        parsed_path = urlparse(self.path)
-        if "/api/v1/post_parameters" in parsed_path:
-            length = int(self.headers["Content-Length"])
-            post_data = self.rfile.read(length).decode("utf-8")
-            # Parse data from POST
-
-#            # Print for debugging
-            pass
-#            self.wfile.write(str(post_data).encode("utf-8"))
-#            self.wfile.write("\n".encode("utf-8"))
-        else:
-            util.debug("POST request sent to " + parsed_path)
-
-endpoint = "{\n}"
-def main():
-    global endpoint
-    from http.server import HTTPServer
-    server = HTTPServer(("127.0.0.1", 8080), Server)
-    print("Starting server, ^c to exit")
-    threading.Thread(target=server.serve_forever).start()
-    while True:
-        timestep()
-        # Use a copy of endpoint to prevent queries to endpoint from
-        # receiving an in-progress timestep
-        temp_endpoint = "{\n"
-        for particle in particles:
-            temp_endpoint += json.dumps(particle, default=lambda obj: obj.__dict__, sort_keys = True, indent=2)
-        temp_endpoint += "\n}"
-        endpoint = temp_endpoint
-
-if __name__ == "__main__":
-    main()
