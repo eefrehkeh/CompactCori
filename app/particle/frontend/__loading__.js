@@ -73,8 +73,8 @@ pc.script.createLoadingScreen(function (app) {
 
     createCss();
 
+    showSplash();
 
-    app.on("preload:start", showSplash);
     app.on("preload:end", function () {
         app.off("preload:progress");
     });

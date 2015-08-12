@@ -1,4 +1,7 @@
-pc.script.attribute("elevation", "number", -30);
+//Script attached to AlphaCamera, will follow behind Alpha as he swims through the scene.
+//Either enable OrbitCamera entity or AlphaCamera entity, but not both.
+
+pc.script.attribute("elevation", "number", -15);
 pc.script.attribute("distance", "number", 5);
 pc.script.attribute("positionFactor", "number", 0.2);
 pc.script.attribute("rotationFactor", "number", -0.2);
@@ -22,18 +25,19 @@ pc.script.create('camera1', function (context) {
         postUpdate: function (dt) {
             if (this.type === 0) {
                 this.updateFixedFollow(dt);
-            } else if (this.type === 1) {
-                this.updateTrailingFollow(dt);    
-            } else if (this.type === 2) {
-                this.updateLookAt();
-            }
+            } //else if (this.type === 1) {
+//                 this.updateTrailingFollow(dt);    
+//             } else if (this.type === 2) {
+//                 this.updateLookAt();
+//             }
             
             // cycle through camera types
             if (context.keyboard.wasPressed(pc.input.KEY_SPACE)) {
-                this.type++;
-                if (this.type > 2) {
-                    this.type = 0;
-                }
+                this.type = 0;
+//                 this.type++;
+//                 if (this.type > 2) {
+//                     this.type = 0;
+//                 }
             }
         },
         

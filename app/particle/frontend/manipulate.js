@@ -1,3 +1,7 @@
+//This document was code I was using to help move a ball across the screen using Jack's API.
+//I don't want to delete it because it contains functions I preliminarily used, that I may want to look back on
+
+//Next 4 lines: Code that adds jQuery as a library to the Javascript. Found at http://stackoverflow.com/questions/1140402/how-to-add-jquery-in-js-file
 var script = document.createElement('script');
 script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js';
 script.type = 'text/javascript';

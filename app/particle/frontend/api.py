@@ -67,25 +67,43 @@ def main():
     print("Server started")
 
     particles = []
-    particles.append( {"particle_id" : 0, "position" : [0.5,0.5,0.5], "velocity" : [0.1,0.1,0.1] } )
-    particles.append( {"particle_id" : 1, "position" : [0.0,0.5,0.5], "velocity" : [0.1,0.1,0.1] } )
+    particles.append( {"particle_id" : 0, "position" : [0.0,0.0,0.0], "velocity" : [0.1,0.1,0.1] } )
+    particles.append( {"particle_id" : 1, "position" : [5.0,0.0,5.5], "velocity" : [0.1,0.1,0.1] } )
 
     icount = 0
     while True:
-        icount += 1
-        temp_endpoint = "{\"particles\":"
-        for particle in particles:
-           particle['position'][0] += particle['velocity'][0]
-           particle['position'][0] %= 1
-           particle['position'][1] += particle['velocity'][1]
-           particle['position'][1] %= 1
-           particle['position'][2] += particle['velocity'][2]
-           particle['position'][2] %= 1
-        temp_endpoint += json.dumps(particles)
-        temp_endpoint += "}"
-        endpoint = temp_endpoint
-        debug("Loop count "+str(icount))
-        debug("Loop count "+endpoint)
+        for i in range(500):
+            icount += 1
+            temp_endpoint = "{\"particles\":"
+            temp_endpoint += json.dumps(particles)
+            temp_endpoint += "}"
+            endpoint = temp_endpoint
+            debug("Loop count "+str(icount))
+            debug("Loop count "+endpoint)
+
+        particles.append( {"particle_id" : 3, "position" : [-5.0,0.0,-5.0], "velocity" : [0.1,0.1,0.1] } )
+        particles.append( {"particle_id" : 4, "position" : [0.0,5.0,0.0], "velocity" : [0.1,0.1,0.1] } )
+    
+        for i in range(500):
+            icount += 1
+            temp_endpoint = "{\"particles\":"
+            temp_endpoint += json.dumps(particles)
+            temp_endpoint += "}"
+            endpoint = temp_endpoint
+            debug("Loop count "+str(icount))
+            debug("Loop count "+endpoint)
+    
+        particles.pop(3)
+        particles.pop(2)
+
+        for i in range(500):
+            icount += 1
+            temp_endpoint = "{\"particles\":"
+            temp_endpoint += json.dumps(particles)
+            temp_endpoint += "}"
+            endpoint = temp_endpoint
+            debug("Loop count "+str(icount))
+            debug("Loop count "+endpoint)
 
 if __name__ == "__main__":
     main()

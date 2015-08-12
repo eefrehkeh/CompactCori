@@ -1,3 +1,6 @@
+//Orbit Camera controlled by mouse input which will rotate around scene at a given distance.
+//Either enable OrbitCamera entity or AlphaCamera entity, but not both.
+
 pc.script.create('Orbit3d', function (context) {
     // Creates a new Orbit3d instance
     var Orbit3d = function (entity) {
