@@ -2,7 +2,7 @@
 Welcome to the PlayCanvas frontend. This is a guide that should help you when looking through the source code.
 
 Note: Everything that pertains to PlayCanvas (mostly scripting) will not be covered here, as they have their own
-tutorials and API reference. Check out [developer.playcanvas.com/en](developer.playcanvas.com/en) for more information.
+tutorials and API reference. Check out [developer.playcanvas.com](developer.playcanvas.com/en) for more information.
 
 ## Using the Editor
 To be able to modify the frontend you must have an account with PlayCanvas. You can either:
@@ -32,7 +32,7 @@ Here is a quick list of the most important files inside the frontend source:
 When you are finished with the PlayCanvas project you have two options: 
 
 1. Publish the application online and run it from the browser
-  * This option is absolutely fine, but pay attention to the 4 lines of code present in *ajax.js, alphacontrols.js,* and *KeyboardInput.js* which add jQuery to the file. I'm not sure if these will cause a problem if the project is downloaded and ran as a standalone file.
+  * This option is absolutely fine, but pay attention to the 4 lines of code present in **ajax.js, alphacontrols.js,** and **KeyboardInput.js** which add jQuery to the file. I'm not sure if these will cause a problem if the project is downloaded and ran as a standalone file.
 2. Download the source files from PlayCanvas and run using python SimpleHTTPServer command
   * Navigate out of the editor and into the Dashboard for the project. From this page click the tab that says `Publish`. Click the `Download` button to the right, give the download a name, then click `Web` at the bottom of the popup.
   * Once the .zip file is in your Downloads folder, move it to the desired directory. After unzipping the contents, you will be able to run the PlayCanvas project by opening up the terminal and running the following command: `python3 -m SimpleHTTPServer 8000`. 
