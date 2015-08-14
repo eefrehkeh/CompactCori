@@ -52,13 +52,15 @@ pc.script.create('ajax', function (app) {
 
         // Called every frame, dt is time in seconds since last update
         update: function (dt) {
+            //console.log("globaljson: ", globaljson);
+            
             var vec = new pc.Vec3(0,0,0); 
             
             var urlstring = "";
             
             //if statement to toggle between Nick and Elizabeth application
             if (global_toggle === 1){
-                urlstring = "http://localhost:8080/api/v1/get_particles";  //Nick's code
+                urlstring = "http://usgbox:8080/api/v1/get_particles";  //Nick's code http://localhost:8080/api/v1/get_particles
             }else if (global_toggle === 2){
                 urlstring = "http://128.55.19.109:3000/api/v1/get_particles";  //Eliz's code
             }
@@ -68,6 +70,7 @@ pc.script.create('ajax', function (app) {
                 url: urlstring, //Elizabeth's url: "http://128.55.19.109:3000/api/get_particles"
                 type: "GET",
                 dataType: "json",
+                async: false,
                 success: function(res) {
                     globaljson = res;                //this is where received json object is put into global json object
                 },

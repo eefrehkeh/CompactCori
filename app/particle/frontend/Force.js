@@ -17,12 +17,12 @@ pc.script.create('Force', function (app) {
 
         // Called every frame, dt is time in seconds since last update
         update: function (dt) {
-            var gravity = new pc.Vec3(0, 9.8, 0);
-            var goToHere = new pc.Vec3();
-            goToHere = this.ball.getPosition().sub(this.entity.getPosition());   //get position of green ball, create vector from it
-            goToHere.normalize().scale(1);
-            this.entity.rigidbody.applyForce(gravity);                           //apply a force that negates downward gravity force within PlayCanvas
-            this.entity.rigidbody.applyForce(goToHere);                          //apply a force that pushes molecule towards green ball
+//             var gravity = new pc.Vec3(0, 9.8, 0);
+//             var goToHere = new pc.Vec3();
+//             goToHere = this.ball.getPosition().sub(this.entity.getPosition());   //get position of green ball, create vector from it
+//             goToHere.normalize().scale(1);
+//             this.entity.rigidbody.applyForce(gravity);                           //apply a force that negates downward gravity force within PlayCanvas
+//             this.entity.rigidbody.applyForce(goToHere);                          //apply a force that pushes molecule towards green ball
 
             
             //Code Below: Previous code which is able to find particle_id number from json object once and set it as name of molecule forever. 
@@ -53,7 +53,12 @@ pc.script.create('Force', function (app) {
         
         //Crucial function which other scripts can call and set position of H20 molecule to which this script is attached
         updatePosition: function (x, y, z) {
-            this.entity.setLocalPosition(x, y, z);
+            var newVec = new pc.Vec3(x, y, z);
+            //console.log("Molecule", this.entity.name, ": Raw Vec: [", x.toString(), y.toString(), z.toString(), "]");
+            newVec.scale(0.1);
+            //this.entity.setLocalPosition(x, y, z);
+            this.entity.setLocalPosition(newVec.x, newVec.y, newVec.z);
+            //console.log("Molecule ", this.entity.name, ": New Vec: [", newVec.x, newVec.y, newVec.z, "]");
         },
         
         

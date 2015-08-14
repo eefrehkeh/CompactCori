@@ -17,7 +17,7 @@ pc.script.create('Orbit3d', function (context) {
             this.cam.camera.farClip = 1000000;
             this.cam_xyz = new pc.Vec3();
             
-            this.target = context.root.findByName('Ball');
+            this.target = context.root.findByName('BoxMiddle');
             this.target_xyz = new pc.Vec3();
             
             
@@ -25,7 +25,7 @@ pc.script.create('Orbit3d', function (context) {
             context.mouse.on(pc.input.EVENT_MOUSEDOWN, this.onMouseDown, this);
             context.mouse.on(pc.input.EVENT_MOUSEUP, this.onMouseUp, this);
             
-            this.cam_distance = 80; //r
+            this.cam_distance = 150; //r
             
             this.cam_ex = 30;  //phi
             this.cam_ez = 30;  //theta

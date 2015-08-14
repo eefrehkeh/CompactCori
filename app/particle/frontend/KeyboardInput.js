@@ -8,7 +8,7 @@ document.getElementsByTagName('head')[0].appendChild(script);
 
 var global_toggle = 1;
 var global_params = {num_particles: 5, num_workers: 1};
-//{name:"ravi",age:"31"}
+var togglenum = 1;
 
 pc.script.create('KeyboardInput', function (app) {
     // Creates a new KeyboardInput instance
@@ -48,6 +48,24 @@ pc.script.create('KeyboardInput', function (app) {
                 });
             }
             
+            //toggle between Camera scripts.
+            if (app.keyboard.isPressed(pc.input.KEY_C)) {
+                console.log("input received: ");
+                if (togglenum === 1){
+                    console.log("inside toggle 1");
+                    app.root.findByName("AlphaCamera").enabled = false;
+                    app.root.findByName("OrbitCamera").enabled = true;
+                    togglenum = 2;
+                }else{
+                    console.log("inside toggle 2");
+                    app.root.findByName("AlphaCamera").enabled = true;
+                    app.root.findByName("OrbitCamera").enabled = false;
+                    togglenum = 1;
+                }
+                
+            }
+            
+            //toggle between Nick's code and Elizabeth's application
             if (app.keyboard.isPressed(pc.input.KEY_1)) {
                 this.entity.script.KeyboardInput.toggle(1);
                 app.root.findByName("Comm").script.ajax.toggle(1);
